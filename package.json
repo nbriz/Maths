@@ -1,0 +1,19 @@
+{
+  "name": "Maths",
+  "version": "1.0.0",
+  "description": "A vanilla JS class with Math functions not included in the JS standard library Math object",
+  "main": "Maths.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nbriz/Maths.git"
+  },
+  "author": "Nick Briz <nickbriz@protonmail.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/nbriz/Maths/issues"
+  },
+  "homepage": "https://github.com/nbriz/Maths#readme"
+}
