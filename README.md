@@ -21,6 +21,7 @@ Maths.randomInt(min, max)
 Maths.randomFloat(min, max)
 Maths.random(val, val2)
 Maths.perlin()
+
 Maths.easeInQuad(t)
 Maths.easeOutQuad(t)
 Maths.easeInOutQuad(t)
