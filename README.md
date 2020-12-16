@@ -77,10 +77,8 @@ the perlin method returns a perlinNoise object, which first needs to be seeded &
 // assuming we've got a canvas && ctx...
 const perlin = Maths.perlin()
 perlin.seed()
-const scalar = 100
 for (let x = 0; x < canvas.width; x++) {
-  const float = Maths.map(x * scalar, 0, canvas.width, 0, 1)
-  let y = perlin.get(float)
+  let y = perlin.get(x * 0.1)
   y = Maths.map(y, -1, 1, 0, canvas.height)
   ctx.lineTo(x, y)
 }
