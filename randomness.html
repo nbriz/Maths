@@ -1,0 +1,45 @@
+<section></section>
+<script src="Maths.js"></script>
+<script>
+
+  randomNoise()
+  perlinNoise()
+
+  function newCanvas () {
+    const canvas = document.createElement('canvas')
+    canvas.width = window.innerWidth
+    const ctx = canvas.getContext('2d')
+    ctx.fillStyle = '#ccc'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.strokeStyle = '#e40477'
+    return { canvas, ctx }
+  }
+
+  function randomNoise () {
+    const { canvas, ctx } = newCanvas()
+    ctx.moveTo(0, canvas.height / 2)
+    for (let x = 0; x < canvas.width; x++) {
+      const y = Maths.randomInt(0, canvas.height)
+      ctx.lineTo(x, y)
+    }
+    ctx.stroke()
+    document.querySelector('section').appendChild(canvas)
+  }
+
+  function perlinNoise () {
+    const { canvas, ctx } = newCanvas()
+    ctx.moveTo(0, canvas.height / 2)
+    const perlin = Maths.perlin()
+    perlin.seed()
+    const scalar = 100
+    for (let x = 0; x < canvas.width; x++) {
+      const float = Maths.map(x * scalar, 0, canvas.width, 0, 1)
+      let y = perlin.get(float)
+      y = Maths.map(y, -1, 1, 0, canvas.height)
+      ctx.lineTo(x, y)
+    }
+    ctx.stroke()
+    document.querySelector('section').appendChild(canvas)
+  }
+
+</script>

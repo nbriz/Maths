@@ -16,6 +16,12 @@ Maths.degToRad(degrees)
 Maths.cartesianToPolar(x, y)
 Maths.polarToCartesian(distance, angle)
 
+Maths.shuffle(array)
+Maths.randomInt(min, max)
+Maths.randomFloat(min, max)
+Maths.random(val, val2)
+Maths.noise(x, y, z)
+
 Maths.easeInQuad(t)
 Maths.easeOutQuad(t)
 Maths.easeInOutQuad(t)
@@ -28,10 +34,55 @@ Maths.easeInOutQuart(t)
 Maths.easeInQuint(t)
 Maths.easeOutQuint(t)
 Maths.easeInOutQuint(t)
+Maths.easeInSine(t)
+Maths.easeOutSine(t)
+Maths.easeInOutSine(t)
+Maths.easeInCirc(t)
+Maths.easeOutCirc(t)
+Maths.easeInOutCirc(t)
+Maths.easeInElastic(t)
+Maths.easeOutElastic(t)
+Maths.easeInOutElastic(t)
+Maths.easeInExpo(t)
+Maths.easeOutExpo(t)
+Maths.easeInOutExpo(t)
+Maths.easeInBack(t)
+Maths.easeOutBack(t)
+Maths.easeInOutBack(t)
+Maths.easeInBounce(t)
+Maths.easeOutBounce(t)
+```
 
-Maths.shuffle(array)
-Maths.randomInt(min, max)
-Maths.randomFloat(min, max)
-Maths.random(val, val2)
-Maths.noise(x, y, z)
+the easing methods are pretty "raw", so any timing or higher level logic is up to u, for ex:
+```js
+// example of using one of the easing functions to get a tweened scrolling effect
+function tween (from, to, i = 0) {
+  if (this.tweenTimer) clearTimeout(this.tweenTimer)
+  const dur = 2 // duration in seconds
+  const fps = 1000 / 30 // 30 frames per second
+  const inc = 1 / dur / fps
+  i += inc
+  if (i >= 1) return
+  const pos = Maths.easeInOutQuart(i)
+  const Y = Maths.map(pos, 0, 1, from, to)
+  window.scrollTo(0, Y)
+  this.tweenTimer = setTimeout(() => tween(from, to, i), fps)
+}
+
+tween(0, 100) // scroll from 0 to 1000 w/an easeInOutQuart
+```
+
+the perlin method returns a perlinNoise object, which first needs to be seeded && then can be used to return 1 or 2 dimensional noise from `-1` to `1`, for ex:
+```js
+// assuming we've got a canvas && ctx...
+const perlin = Maths.perlin()
+perlin.seed()
+const scalar = 100
+for (let x = 0; x < canvas.width; x++) {
+  const float = Maths.map(x * scalar, 0, canvas.width, 0, 1)
+  let y = perlin.get(float)
+  y = Maths.map(y, -1, 1, 0, canvas.height)
+  ctx.lineTo(x, y)
+}
+ctx.stroke()
 ```

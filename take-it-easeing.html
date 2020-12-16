@@ -1,0 +1,99 @@
+<style>
+  #tween-demo {
+    position: relative;
+  }
+  #tween-demo > div {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    background-color: #e40477;
+    border-radius: 50%;
+  }
+
+  #functions > canvas {
+    margin: 20px;
+    cursor: pointer;
+  }
+</style>
+
+<section id="tween-demo">
+  <div></div>
+</section>
+
+<section id="functions"></section>
+
+<script src="Maths.js"></script>
+<script>
+
+  const list = [
+    'easeInQuad',
+    'easeOutQuad',
+    'easeInOutQuad',
+    'easeInCubic',
+    'easeOutCubic',
+    'easeInOutCubic',
+    'easeInQuart',
+    'easeOutQuart',
+    'easeInOutQuart',
+    'easeInQuint',
+    'easeOutQuint',
+    'easeInOutQuint',
+    'easeInSine',
+    'easeOutSine',
+    'easeInOutSine',
+    'easeInCirc',
+    'easeOutCirc',
+    'easeInOutCirc',
+    'easeInElastic',
+    'easeOutElastic',
+    'easeInOutElastic',
+    'easeInExpo',
+    'easeOutExpo',
+    'easeInOutExpo',
+    'easeInBack',
+    'easeOutBack',
+    'easeInOutBack',
+    'easeInBounce',
+    'easeOutBounce',
+    'easeInOutBounce'
+  ]
+
+  const drawFunctions = (type) => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    canvas.width = 220
+    canvas.height = 220
+    ctx.fillStyle = '#ccc'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.fillStyle = '#e40477'
+    for (let x = 10; x < canvas.width - 10; x++) {
+      const y = canvas.height - x
+      const normY = Maths.map(y, canvas.height - 10, 10, 0, 1)
+      const easeY = Maths[type](normY)
+      const Y = Maths.map(easeY, 0, 1, canvas.height - 10, 10)
+      ctx.fillRect(x, Y, 1, 1)
+    }
+    ctx.fillText(type, 10, 30)
+    canvas.addEventListener('click', () => tween(type))
+    document.querySelector('#functions').appendChild(canvas)
+  }
+
+  const tween = (type, i = 0) => {
+    if (this.tweenTimer) clearTimeout(this.tweenTimer)
+    const dur = 2 // duration in seconds
+    const fps = 1000 / 30 // 30 frames per second
+    const inc = 1 / dur / fps
+    i += inc; if (i >= 1) return
+    const pos = Maths[type](i)
+    const goal = window.innerWidth - 150
+    const x = Maths.map(pos, 0, 1, 0, goal)
+    const div = document.querySelector('#tween-demo > div')
+    div.style.left = x + 'px'
+    this.tweenTimer = setTimeout(() => tween(type, i), fps)
+  }
+
+  list.forEach(ease => drawFunctions(ease))
+
+</script>

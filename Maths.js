@@ -29,6 +29,12 @@
     Maths.cartesianToPolar(x, y)
     Maths.polarToCartesian(distance, angle)
 
+    Maths.shuffle(array)
+    Maths.randomInt(min, max)
+    Maths.randomFloat(min, max)
+    Maths.random(val, val2)
+    Maths.perlin()
+
     Maths.easeInQuad(t)
     Maths.easeOutQuad(t)
     Maths.easeInOutQuad(t)
@@ -41,13 +47,23 @@
     Maths.easeInQuint(t)
     Maths.easeOutQuint(t)
     Maths.easeInOutQuint(t)
-
-    Maths.shuffle(array)
-    Maths.randomInt(min, max)
-    Maths.randomFloat(min, max)
-    Maths.random(val, val2)
-    Maths.noise(x, y, z)
-
+    Maths.easeInSine(t)
+    Maths.easeOutSine(t)
+    Maths.easeInOutSine(t)
+    Maths.easeInCirc(t)
+    Maths.easeOutCirc(t)
+    Maths.easeInOutCirc(t)
+    Maths.easeInElastic(t)
+    Maths.easeOutElastic(t)
+    Maths.easeInOutElastic(t)
+    Maths.easeInExpo(t)
+    Maths.easeOutExpo(t)
+    Maths.easeInOutExpo(t)
+    Maths.easeInBack(t)
+    Maths.easeOutBack(t)
+    Maths.easeInOutBack(t)
+    Maths.easeInBounce(t)
+    Maths.easeOutBounce(t)
 */
 class Maths {
   static norm (value, min, max) { return (value - min) / (max - min) }
@@ -91,6 +107,86 @@ class Maths {
     var x = distance * Math.cos(angle)
     var y = distance * Math.sin(angle)
     return { x: x, y: y }
+  }
+
+  // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ ._
+  // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ .  randomness
+  // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ .
+
+  static shuffle (a) { // via: https://stackoverflow.com/a/6274381/1104148
+    let j, x, i
+    for (i = a.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1))
+      x = a[i]
+      a[i] = a[j]
+      a[j] = x
+    }
+    return a
+  }
+
+  static randomInt (min, max) {
+    if (typeof max === 'undefined') { max = min; min = 0 }
+    return Math.floor(min + Math.random() * (max - min + 1))
+  }
+
+  static randomFloat (min, max) {
+    if (typeof max === 'undefined') { max = min; min = 0 }
+    return min + Math.random() * (max - min)
+  }
+
+  static random (val, val2) {
+    if (val instanceof Array) {
+      return val[Math.floor(Math.random() * val.length)]
+    } else {
+      this.randomFloat(val, val2)
+    }
+  }
+
+  static perlin () { // via: https://github.com/joeiddon/perlin
+    return {
+      randVect: function () {
+        const theta = Math.random() * 2 * Math.PI
+        return { x: Math.cos(theta), y: Math.sin(theta) }
+      },
+      dot_prod_grid: function (x, y, vx, vy) {
+        let gVect
+        const dVect = { x: x - vx, y: y - vy }
+        if (this.gradients[[vx, vy]]) {
+          gVect = this.gradients[[vx, vy]]
+        } else {
+          gVect = this.randVect()
+          this.gradients[[vx, vy]] = gVect
+        }
+        return dVect.x * gVect.x + dVect.y * gVect.y
+      },
+      smootherstep: function (x) {
+        return 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3
+      },
+      interp: function (x, a, b) {
+        return a + this.smootherstep(x) * (b - a)
+      },
+      seed: function () {
+        this.gradients = {}
+      },
+      memory: {},
+      get: function (x, y) {
+        y = y || 0
+        const hasIt = Object.prototype.hasOwnProperty.call(this.memory, [x, y])
+        if (hasIt) return this.memory[[x, y]]
+        const xf = Math.floor(x)
+        const yf = Math.floor(y)
+        // interpolate
+        const tl = this.dot_prod_grid(x, y, xf, yf)
+        const tr = this.dot_prod_grid(x, y, xf + 1, yf)
+        const bl = this.dot_prod_grid(x, y, xf, yf + 1)
+        const br = this.dot_prod_grid(x, y, xf + 1, yf + 1)
+        const xt = this.interp(x - xf, tl, tr)
+        const xb = this.interp(x - xf, bl, br)
+        const v = this.interp(y - yf, xt, xb)
+        this.memory[[x, y]] = v
+        return v
+      }
+    }
   }
 
   // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ .
@@ -145,117 +241,110 @@ class Maths {
     return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
   }
 
-  // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ ._
-  // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ .  randomness
-  // ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ . _ . ~ * ~ .
+  // easings below this point via: https://easings.net
 
-  static shuffle (a) { // via: https://stackoverflow.com/a/6274381/1104148
-    let j, x, i
-    for (i = a.length - 1; i > 0; i--) {
-      j = Math.floor(Math.random() * (i + 1))
-      x = a[i]
-      a[i] = a[j]
-      a[j] = x
-    }
-    return a
+  static easeInSine (x) {
+    return 1 - Math.cos((x * Math.PI) / 2)
   }
 
-  static randomInt (min, max) {
-    if (typeof max === 'undefined') { max = min; min = 0 }
-    return Math.floor(min + Math.random() * (max - min + 1))
+  static easeOutSine (x) {
+    return Math.sin((x * Math.PI) / 2)
   }
 
-  static randomFloat (min, max) {
-    if (typeof max === 'undefined') { max = min; min = 0 }
-    return min + Math.random() * (max - min)
+  static easeInOutSine (x) {
+    return -(Math.cos(Math.PI * x) - 1) / 2
   }
 
-  static random (val, val2) {
-    if (val instanceof Array) {
-      return val[Math.floor(Math.random() * val.length)]
+  static easeInCirc (x) {
+    return 1 - Math.sqrt(1 - Math.pow(x, 2))
+  }
+
+  static easeOutCirc (x) {
+    return Math.sqrt(1 - Math.pow(x - 1, 2))
+  }
+
+  static easeInOutCirc (x) {
+    return x < 0.5
+      ? (1 - Math.sqrt(1 - Math.pow(2 * x, 2))) / 2
+      : (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2
+  }
+
+  static easeInElastic (x) {
+    const c4 = (2 * Math.PI) / 3
+    return x === 0 ? 0 : x === 1
+      ? 1 : -Math.pow(2, 10 * x - 10) * Math.sin((x * 10 - 10.75) * c4)
+  }
+
+  static easeOutElastic (x) {
+    const c4 = (2 * Math.PI) / 3
+    return x === 0 ? 0 : x === 1
+      ? 1 : Math.pow(2, -10 * x) * Math.sin((x * 10 - 0.75) * c4) + 1
+  }
+
+  static easeInOutElastic (x) {
+    const c5 = (2 * Math.PI) / 4.5
+    return x === 0 ? 0 : x === 1
+      ? 1 : x < 0.5
+        ? -(Math.pow(2, 20 * x - 10) * Math.sin((20 * x - 11.125) * c5)) / 2
+        : (Math.pow(2, -20 * x + 10) * Math.sin((20 * x - 11.125) * c5)) / 2 + 1
+  }
+
+  static easeInExpo (x) {
+    return x === 0 ? 0 : Math.pow(2, 10 * x - 10)
+  }
+
+  static easeOutExpo (x) {
+    return x === 1 ? 1 : 1 - Math.pow(2, -10 * x)
+  }
+
+  static easeInOutExpo (x) {
+    return x === 0 ? 0 : x === 1
+      ? 1 : x < 0.5
+        ? Math.pow(2, 20 * x - 10) / 2 : (2 - Math.pow(2, -20 * x + 10)) / 2
+  }
+
+  static easeInBack (x) {
+    const c1 = 1.70158
+    const c3 = c1 + 1
+    return c3 * x * x * x - c1 * x * x
+  }
+
+  static easeOutBack (x) {
+    const c1 = 1.70158
+    const c3 = c1 + 1
+    return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2)
+  }
+
+  static easeInOutBack (x) {
+    const c1 = 1.70158
+    const c2 = c1 * 1.525
+    return x < 0.5
+      ? (Math.pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2)) / 2
+      : (Math.pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2
+  }
+
+  static easeInBounce (x) {
+    return 1 - this.easeOutBounce(1 - x)
+  }
+
+  static easeOutBounce (x) {
+    const n1 = 7.5625
+    const d1 = 2.75
+    if (x < 1 / d1) {
+      return n1 * x * x
+    } else if (x < 2 / d1) {
+      return n1 * (x -= 1.5 / d1) * x + 0.75
+    } else if (x < 2.5 / d1) {
+      return n1 * (x -= 2.25 / d1) * x + 0.9375
     } else {
-      this.randomFloat(val, val2)
+      return n1 * (x -= 2.625 / d1) * x + 0.984375
     }
   }
 
-  static noise (x, y, z) { // via P5.js perlin noise
-    let perlin = null
-    const PERLIN_YWRAPB = 4
-    const PERLIN_YWRAP = 1 << PERLIN_YWRAPB
-    const PERLIN_ZWRAPB = 8
-    const PERLIN_ZWRAP = 1 << PERLIN_ZWRAPB
-    const PERLIN_SIZE = 4095
-
-    const perlinOctaves = 4 // default to medium smooth
-    const perlinAmpFalloff = 0.5 // 50% reduction/octave
-
-    function scaledCosine (i) {
-      return 0.5 * (1.0 - Math.cos(i * Math.PI))
-    }
-
-    y = (typeof y !== 'undefined') ? y : 0
-    z = (typeof z !== 'undefined') ? z : 0
-
-    if (perlin === null) {
-      perlin = new Array(PERLIN_SIZE + 1)
-      for (let i = 0; i < PERLIN_SIZE + 1; i++) {
-        perlin[i] = Math.random()
-      }
-    }
-
-    if (x < 0) { x = -x }
-    if (y < 0) { y = -y }
-    if (z < 0) { z = -z }
-
-    let xi = Math.floor(x)
-    let yi = Math.floor(y)
-    let zi = Math.floor(z)
-    let xf = x - xi
-    let yf = y - yi
-    let zf = z - zi
-    let rxf, ryf
-
-    let r = 0
-    let ampl = 0.5
-
-    let n1, n2, n3
-
-    for (let o = 0; o < perlinOctaves; o++) {
-      let of = xi + (yi << PERLIN_YWRAPB) + (zi << PERLIN_ZWRAPB)
-
-      rxf = scaledCosine(xf)
-      ryf = scaledCosine(yf)
-
-      n1 = perlin[of & PERLIN_SIZE]
-      n1 += rxf * (perlin[(of + 1) & PERLIN_SIZE] - n1)
-      n2 = perlin[(of + PERLIN_YWRAP) & PERLIN_SIZE]
-      n2 += rxf * (perlin[(of + PERLIN_YWRAP + 1) & PERLIN_SIZE] - n2)
-      n1 += ryf * (n2 - n1)
-
-      of += PERLIN_ZWRAP
-      n2 = perlin[of & PERLIN_SIZE]
-      n2 += rxf * (perlin[(of + 1) & PERLIN_SIZE] - n2)
-      n3 = perlin[(of + PERLIN_YWRAP) & PERLIN_SIZE]
-      n3 += rxf * (perlin[(of + PERLIN_YWRAP + 1) & PERLIN_SIZE] - n3)
-      n2 += ryf * (n3 - n2)
-
-      n1 += scaledCosine(zf) * (n2 - n1)
-
-      r += n1 * ampl
-      ampl *= perlinAmpFalloff
-      xi <<= 1
-      xf *= 2
-      yi <<= 1
-      yf *= 2
-      zi <<= 1
-      zf *= 2
-
-      if (xf >= 1.0) { xi++; xf-- }
-      if (yf >= 1.0) { yi++; yf-- }
-      if (zf >= 1.0) { zi++; zf-- }
-    }
-
-    return r
+  static easeInOutBounce (x) {
+    return x < 0.5
+      ? (1 - this.easeOutBounce(1 - 2 * x)) / 2
+      : (1 + this.easeOutBounce(2 * x - 1)) / 2
   }
 }
 
