@@ -17,8 +17,8 @@
     -----------
 
     Maths.norm(value, min, max)
-    Maths.lerp(norm, min, max)
     Maths.clamp(value, min, max)
+    Maths.lerp(valueA, valueB, t)
     Maths.map(value, sourceMin, sourceMax, destMin, destMax)
 
     Maths.dist(p1x, p1y, p2x, p2y)
@@ -68,12 +68,14 @@
 class Maths {
   static norm (value, min, max) { return (value - min) / (max - min) }
 
-  static lerp (norm, min, max) { return (max - min) * norm + min }
-
   static clamp (value, min, max) { return Math.max(min, Math.min(max, value)) }
 
+  static lerp (a, b, t) { return (1 - t) * a + t * b }
+
+  static _lerp (norm, min, max) { return (max - min) * norm + min }
+
   static map (value, sourceMin, sourceMax, destMin, destMax) {
-    return this.lerp(this.norm(value, sourceMin, sourceMax), destMin, destMax)
+    return this._lerp(this.norm(value, sourceMin, sourceMax), destMin, destMax)
   }
 
   static dist (p1x, p1y, p2x, p2y) {

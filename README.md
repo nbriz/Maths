@@ -1,11 +1,11 @@
 # Maths
 
-A vanilla JS class with Math functions not included in the JS standard library Math object
+A vanilla JS class with Math functions not included in the JS standard library Math object. This repo also contians a couple of example pages for how to use the [randomness](https://nbriz.github.io/Maths/randomness.html) mthods as well as the [easing](https://nbriz.github.io/Maths/take-it-easeing.html) mthods.
 
 ```js
 Maths.norm(value, min, max)
-Maths.lerp(norm, min, max)
 Maths.clamp(value, min, max)
+Maths.lerp(valueA, valueB, t)
 Maths.map(value, sourceMin, sourceMax, destMin, destMax)
 
 Maths.dist(p1x, p1y, p2x, p2y)
