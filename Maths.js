@@ -140,7 +140,15 @@ class Maths {
     if (val instanceof Array) {
       return val[Math.floor(Math.random() * val.length)]
     } else {
-      this.randomFloat(val, val2)
+      let min, max
+      if (val && !val2) {
+        min = 0; max = val
+      } else if (val && val2) {
+        min = val; max = val2
+      } else {
+        min = 0; max = 1
+      }
+      return this.randomFloat(min, max)
     }
   }
 
