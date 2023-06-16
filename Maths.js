@@ -141,9 +141,9 @@ class Maths {
       return val[Math.floor(Math.random() * val.length)]
     } else {
       let min, max
-      if (val && !val2) {
+      if (typeof val !== 'undefined' && typeof val2 === 'undefined') {
         min = 0; max = val
-      } else if (val && val2) {
+      } else if (typeof val !== 'undefined' && typeof val2 !== 'undefined') {
         min = val; max = val2
       } else {
         min = 0; max = 1
