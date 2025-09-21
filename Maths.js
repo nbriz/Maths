@@ -139,6 +139,14 @@ class Maths {
   static random (val, val2) {
     if (val instanceof Array) {
       return val[Math.floor(Math.random() * val.length)]
+    } else if (typeof val === 'string') {
+      const words = val.match(/\S+/gu) || []
+      if (words.length === 0) return undefined
+      if (words.length === 1) {
+        const chars = Array.from(words[0])
+        return chars[Math.floor(Math.random() * chars.length)]
+      }
+      return words[Math.floor(Math.random() * words.length)]
     } else {
       let min, max
       if (typeof val !== 'undefined' && typeof val2 === 'undefined') {
